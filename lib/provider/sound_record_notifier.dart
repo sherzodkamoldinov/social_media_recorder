@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:flutter/cupertino.dart';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:record/record.dart';
 import 'package:social_media_recorder/audio_encoder_type.dart';
-// import 'package:uuid/uuid.dart';
 
 class SoundRecordNotifier extends ChangeNotifier {
   int _localCounterForMaxRecordTime = 0;
@@ -25,7 +26,7 @@ class SoundRecordNotifier extends ChangeNotifier {
   String initialStorePathRecord = "";
 
   /// recording mp3 sound Object
-  Record recordMp3 = Record();
+  final AudioRecorder recordMp3 = AudioRecorder();
 
   /// recording mp3 sound to check if all permisiion passed
   bool _isAcceptedPermission = false;
@@ -146,8 +147,7 @@ class SoundRecordNotifier extends ChangeNotifier {
   Future<String> getFilePath() async {
     String _sdPath = "";
     Directory tempDir = await getTemporaryDirectory();
-    _sdPath =
-        initialStorePathRecord.isEmpty ? tempDir.path : initialStorePathRecord;
+    _sdPath = initialStorePathRecord.isEmpty ? tempDir.path : initialStorePathRecord;
     var d = Directory(_sdPath);
     if (!d.existsSync()) {
       d.createSync(recursive: true);
@@ -156,8 +156,7 @@ class SoundRecordNotifier extends ChangeNotifier {
     String convertedDateTime =
         "${now.year.toString()}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}-${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}";
     // print("the current data is $convertedDateTime");
-    String storagePath =
-        _sdPath + "/" + convertedDateTime + _getSoundExtention();
+    String storagePath = _sdPath + "/" + convertedDateTime + _getSoundExtention();
     mPath = storagePath;
     return storagePath;
   }
@@ -259,7 +258,7 @@ class SoundRecordNotifier extends ChangeNotifier {
       buttonPressed = true;
       String recordFilePath = await getFilePath();
       _timer = Timer(const Duration(milliseconds: 900), () {
-        recordMp3.start(path: recordFilePath);
+        recordMp3.start(const RecordConfig(), path: recordFilePath);
       });
 
       if (startRecord != null) {
