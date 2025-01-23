@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -132,7 +131,7 @@ class SoundRecordNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  String _getSoundExtention() {
+  String _getSoundExtension() {
     if (encode == AudioEncoderType.AAC ||
         encode == AudioEncoderType.AAC_LD ||
         encode == AudioEncoderType.AAC_HE ||
@@ -146,7 +145,7 @@ class SoundRecordNotifier extends ChangeNotifier {
   /// used to get the current store path
   Future<String> getFilePath() async {
     String _sdPath = "";
-    Directory tempDir = await getTemporaryDirectory();
+    Directory tempDir = await getApplicationDocumentsDirectory();
     _sdPath = initialStorePathRecord.isEmpty ? tempDir.path : initialStorePathRecord;
     var d = Directory(_sdPath);
     if (!d.existsSync()) {
@@ -156,7 +155,7 @@ class SoundRecordNotifier extends ChangeNotifier {
     String convertedDateTime =
         "${now.year.toString()}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}-${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}";
     // print("the current data is $convertedDateTime");
-    String storagePath = _sdPath + "/" + convertedDateTime + _getSoundExtention();
+    String storagePath = _sdPath + "/" + convertedDateTime + _getSoundExtension();
     mPath = storagePath;
     return storagePath;
   }
