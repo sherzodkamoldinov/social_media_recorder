@@ -136,7 +136,7 @@ class SoundRecordNotifier extends ChangeNotifier {
         encode == AudioEncoderType.AAC_LD ||
         encode == AudioEncoderType.AAC_HE ||
         encode == AudioEncoderType.OPUS) {
-      return ".wav";
+      return ".m4a";
     } else {
       return ".3gp";
     }
@@ -258,9 +258,6 @@ class SoundRecordNotifier extends ChangeNotifier {
       String recordFilePath = await getFilePath();
       _timer = Timer(const Duration(milliseconds: 900), () {
         recordMp3.start(
-            const RecordConfig(
-              encoder: AudioEncoder.wav,
-            ),
             path: recordFilePath);
       });
 
