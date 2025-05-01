@@ -259,7 +259,7 @@ class _SocialMediaRecorder extends State<SocialMediaRecorder> {
               width: 30,
               child: LockRecord(
                 backGroundColor: widget.backGroundColor,
-                iconsColor: widget.backGroundColor,
+                iconsColor: widget.iconsColor,
                 soundRecorderState: state,
                 lockIcon: widget.lockButton,
               ),
