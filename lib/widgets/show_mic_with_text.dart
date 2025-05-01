@@ -61,17 +61,20 @@ class ShowMicWithText extends StatelessWidget {
                 child: AnimatedContainer(
                   duration: const Duration(seconds: 1),
                   decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: (soundRecorderState.buttonPressed)
-                          ? backGroundColor ?? Theme.of(context).colorScheme.secondary
-                          : Colors.transparent,
-                      boxShadow: [
-                        BoxShadow(
-                          color: shadowColor?.withValues(alpha: .5) ?? Colors.transparent,
-                          blurRadius: soundRecorderState.second % 2 != 0 ? 0 : 20,
-                          spreadRadius: 5,
-                        )
-                      ]),
+                    shape: BoxShape.circle,
+                    color: (soundRecorderState.buttonPressed)
+                        ? backGroundColor ?? Theme.of(context).colorScheme.secondary
+                        : Colors.transparent,
+                    boxShadow: soundRecorderState.buttonPressed
+                        ? [
+                            BoxShadow(
+                              color: shadowColor?.withValues(alpha: .5) ?? Colors.transparent,
+                              blurRadius: soundRecorderState.second % 2 != 0 ? 0 : 20,
+                              spreadRadius: 5,
+                            )
+                          ]
+                        : [],
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(4.0),
                     child: recordIcon ??
