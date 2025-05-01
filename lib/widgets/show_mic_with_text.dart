@@ -89,26 +89,32 @@ class ShowMicWithText extends StatelessWidget {
             child: Container(
               height: 30,
               color: backGroundColor ?? Colors.grey.shade100,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 8, right: 16),
-                child: DefaultTextStyle(
-                  overflow: TextOverflow.clip,
-                  maxLines: 1,
-                  style: const TextStyle(
-                    fontSize: 14.0,
-                  ),
-                  child: AnimatedTextKit(
-                    animatedTexts: [
-                      ColorizeAnimatedText(
-                        slideToCancelText ?? "",
-                        textStyle: slideToCancelTextStyle ?? colorizeTextStyle,
-                        colors: colorizeColors,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 8, right: 16),
+                    child: DefaultTextStyle(
+                      overflow: TextOverflow.clip,
+                      maxLines: 1,
+                      style: const TextStyle(
+                        fontSize: 14.0,
                       ),
-                    ],
-                    isRepeatingAnimation: true,
-                    onTap: () {},
+                      child: AnimatedTextKit(
+                        animatedTexts: [
+                          ColorizeAnimatedText(
+                            slideToCancelText ?? "",
+                            textStyle: slideToCancelTextStyle ?? colorizeTextStyle,
+                            colors: colorizeColors,
+                          ),
+                        ],
+                        isRepeatingAnimation: true,
+                        onTap: () {},
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
           ),

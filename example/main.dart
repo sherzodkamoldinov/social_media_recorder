@@ -54,6 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Align(
                   alignment: Alignment.centerRight,
                   child: SocialMediaRecorder(
+                    iconsColor:Colors.red,
                     // maxRecordTimeInSecond: 5,
                     startRecording: () {
                       // function called when start recording
