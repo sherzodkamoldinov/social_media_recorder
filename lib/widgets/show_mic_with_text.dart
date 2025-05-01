@@ -86,24 +86,28 @@ class ShowMicWithText extends StatelessWidget {
         ),
         if (shouldShowText)
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 8, right: 16),
-              child: DefaultTextStyle(
-                overflow: TextOverflow.clip,
-                maxLines: 1,
-                style: const TextStyle(
-                  fontSize: 14.0,
-                ),
-                child: AnimatedTextKit(
-                  animatedTexts: [
-                    ColorizeAnimatedText(
-                      slideToCancelText ?? "",
-                      textStyle: slideToCancelTextStyle ?? colorizeTextStyle,
-                      colors: colorizeColors,
-                    ),
-                  ],
-                  isRepeatingAnimation: true,
-                  onTap: () {},
+            child: Container(
+              height: 30,
+              color: backGroundColor ?? Colors.grey.shade100,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 8, right: 16),
+                child: DefaultTextStyle(
+                  overflow: TextOverflow.clip,
+                  maxLines: 1,
+                  style: const TextStyle(
+                    fontSize: 14.0,
+                  ),
+                  child: AnimatedTextKit(
+                    animatedTexts: [
+                      ColorizeAnimatedText(
+                        slideToCancelText ?? "",
+                        textStyle: slideToCancelTextStyle ?? colorizeTextStyle,
+                        colors: colorizeColors,
+                      ),
+                    ],
+                    isRepeatingAnimation: true,
+                    onTap: () {},
+                  ),
                 ),
               ),
             ),

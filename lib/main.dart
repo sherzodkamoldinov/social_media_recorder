@@ -25,8 +25,9 @@ class MyApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
+
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -49,10 +50,10 @@ class _MyHomePageState extends State<MyHomePage> {
               startRecording: () {
                 // function called when start recording
               },
-              stopRecording: (_time) {
+              stopRecording: (time) {
                 // function called when stop recording, return the recording time
               },
-              sendRequestFunction: (soundFile, _time) {
+              sendRequestFunction: (soundFile, time) {
                 //  print("the current path is ${soundFile.path}");
               },
               encode: AudioEncoderType.AAC,

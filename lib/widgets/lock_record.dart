@@ -11,9 +11,11 @@ class LockRecord extends StatefulWidget {
   // ignore: sort_constructors_first
 
   final Widget? lockIcon;
+  final Color? backGroundColor;
 
   const LockRecord({
     this.lockIcon,
+    this.backGroundColor,
     required this.soundRecorderState,
     Key? key,
   }) : super(key: key);
@@ -32,7 +34,7 @@ class _LockRecordState extends State<LockRecord> with TickerProviderStateMixin {
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 4),
         decoration: BoxDecoration(
-          color: Colors.black12,
+          color: widget.backGroundColor ?? Colors.black12,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Column(
