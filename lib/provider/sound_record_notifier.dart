@@ -105,9 +105,9 @@ class SoundRecordNotifier extends ChangeNotifier {
     if (buttonPressed) {
       if (second > 1 || minute > 0) {
         String path = mPath;
-        String _time = minute.toString() + ":" + second.toString();
-        sendRequestFunction(File.fromUri(Uri(path: path)), _time);
-        stopRecording!(_time);
+        String time = "$minute:$second";
+        sendRequestFunction(File.fromUri(Uri(path: path)), time);
+        stopRecording!(time);
       }
     }
     resetEdgePadding();
@@ -144,10 +144,10 @@ class SoundRecordNotifier extends ChangeNotifier {
 
   /// used to get the current store path
   Future<String> getFilePath() async {
-    String _sdPath = "";
+    String sdPath = "";
     Directory tempDir = await getApplicationDocumentsDirectory();
-    _sdPath = initialStorePathRecord.isEmpty ? tempDir.path : initialStorePathRecord;
-    var d = Directory(_sdPath);
+    sdPath = initialStorePathRecord.isEmpty ? tempDir.path : initialStorePathRecord;
+    var d = Directory(sdPath);
     if (!d.existsSync()) {
       d.createSync(recursive: true);
     }
@@ -155,7 +155,7 @@ class SoundRecordNotifier extends ChangeNotifier {
     String convertedDateTime =
         "${now.year.toString()}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}-${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}";
     // print("the current data is $convertedDateTime");
-    String storagePath = _sdPath + "/" + convertedDateTime + _getSoundExtension();
+    String storagePath = "$sdPath/$convertedDateTime${_getSoundExtension()}";
     mPath = storagePath;
     return storagePath;
   }
@@ -193,9 +193,9 @@ class SoundRecordNotifier extends ChangeNotifier {
       try {
         RenderBox box = key.currentContext?.findRenderObject() as RenderBox;
         Offset position = box.localToGlobal(Offset.zero);
-        if (position.dx <= MediaQuery.of(context).size.width * 0.6) {
-          String _time = minute.toString() + ":" + second.toString();
-          if (stopRecording != null) stopRecording!(_time);
+        if (position.dx <= MediaQuery.of(context).size.width * 0.4) {
+          String time = "$minute:$second";
+          if (stopRecording != null) stopRecording!(time);
           resetEdgePadding();
         } else if (x.dx >= MediaQuery.of(context).size.width) {
           edge = 0;
