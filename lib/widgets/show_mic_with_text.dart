@@ -12,6 +12,7 @@ class ShowMicWithText extends StatelessWidget {
   final SoundRecordNotifier soundRecorderState;
   final TextStyle? slideToCancelTextStyle;
   final Color? backGroundColor;
+  final Color? shadowColor;
   final Widget? recordIcon;
   final Color? counterBackGroundColor;
   final double fullRecordPackageHeight;
@@ -20,6 +21,7 @@ class ShowMicWithText extends StatelessWidget {
   // ignore: sort_constructors_first
   ShowMicWithText({
     required this.backGroundColor,
+    required this.shadowColor,
     required this.initRecordPackageWidth,
     required this.fullRecordPackageHeight,
     Key? key,
@@ -65,7 +67,7 @@ class ShowMicWithText extends StatelessWidget {
                           : Colors.transparent,
                       boxShadow: [
                         BoxShadow(
-                          color: backGroundColor?.withValues(alpha: .5) ?? Colors.transparent,
+                          color: shadowColor?.withValues(alpha: .5) ?? Colors.transparent,
                           blurRadius: soundRecorderState.second % 2 != 0 ? 0 : 20,
                           spreadRadius: 5,
                         )

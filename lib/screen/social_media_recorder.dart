@@ -38,6 +38,7 @@ class SocialMediaRecorder extends StatefulWidget {
 
   /// use to change all recording widget color
   final Color? backGroundColor;
+  final Color? shadowColor;
   final Color? iconsColor;
 
   /// use to change the counter style
@@ -100,6 +101,7 @@ class SocialMediaRecorder extends StatefulWidget {
     this.recordIconBackGroundColor = Colors.blue,
     this.recordIconWhenLockBackGroundColor = Colors.blue,
     this.backGroundColor,
+    this.shadowColor,
     this.iconsColor,
     this.cancelTextStyle,
     this.counterTextStyle,
@@ -188,6 +190,7 @@ class _SocialMediaRecorder extends State<SocialMediaRecorder> {
         // cancelRecordFunction: widget.cacnelRecording ?? () {},
         sendButtonIcon: widget.sendButtonIcon,
         cancelTextBackGroundColor: widget.cancelTextBackGroundColor,
+        shadowColor: widget.shadowColor,
         cancelTextStyle: widget.cancelTextStyle,
         counterBackGroundColor: widget.counterBackGroundColor,
         recordIconWhenLockBackGroundColor: widget.recordIconWhenLockBackGroundColor ?? Colors.blue,
@@ -234,6 +237,7 @@ class _SocialMediaRecorder extends State<SocialMediaRecorder> {
                         child: ShowMicWithText(
                           initRecordPackageWidth: widget.initRecordPackageWidth,
                           counterBackGroundColor: widget.counterBackGroundColor,
+                          shadowColor: widget.shadowColor,
                           backGroundColor: widget.recordIconBackGroundColor,
                           fullRecordPackageHeight: widget.fullRecordPackageHeight,
                           recordIcon: widget.recordIcon,

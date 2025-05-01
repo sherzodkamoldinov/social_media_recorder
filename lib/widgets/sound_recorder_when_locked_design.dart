@@ -17,6 +17,7 @@ class SoundRecorderWhenLockedDesign extends StatelessWidget {
   final Color recordIconWhenLockBackGroundColor;
   final Color? counterBackGroundColor;
   final Color? cancelTextBackGroundColor;
+  final Color? shadowColor;
   final Widget? sendButtonIcon;
 
   // ignore: sort_constructors_first
@@ -33,6 +34,7 @@ class SoundRecorderWhenLockedDesign extends StatelessWidget {
     required this.counterTextStyle,
     required this.recordIconWhenLockBackGroundColor,
     required this.counterBackGroundColor,
+    required this.shadowColor,
     required this.cancelTextBackGroundColor,
   }) : super(key: key);
 
@@ -70,7 +72,7 @@ class SoundRecorderWhenLockedDesign extends StatelessWidget {
                     color: recordIconWhenLockBackGroundColor,
                     boxShadow: [
                       BoxShadow(
-                        color: recordIconWhenLockBackGroundColor.withValues(alpha: .5),
+                        color: shadowColor?.withValues(alpha: .5) ?? Colors.transparent,
                         blurRadius: soundRecordNotifier.second % 2 != 0 ? 20 : 0,
                         spreadRadius: 5,
                       ),
