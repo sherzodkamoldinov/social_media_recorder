@@ -7,16 +7,19 @@ import 'package:social_media_recorder/provider/sound_record_notifier.dart';
 class LockRecord extends StatefulWidget {
   /// Object From Provider Notifier
   final SoundRecordNotifier soundRecorderState;
+
   // ignore: sort_constructors_first
 
   final Widget? lockIcon;
+
   const LockRecord({
     this.lockIcon,
     required this.soundRecorderState,
     Key? key,
   }) : super(key: key);
+
   @override
-  _LockRecordState createState() => _LockRecordState();
+  State<LockRecord> createState() => _LockRecordState();
 }
 
 class _LockRecordState extends State<LockRecord> with TickerProviderStateMixin {
@@ -24,53 +27,30 @@ class _LockRecordState extends State<LockRecord> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     /// If click the Button Then send show lock and un lock icon
     if (!widget.soundRecorderState.buttonPressed) return Container();
-    return AnimatedPadding(
-      duration: const Duration(seconds: 1),
-      padding:
-          EdgeInsets.all(widget.soundRecorderState.second % 2 == 0 ? 0 : 8),
-      child: Transform.translate(
-        offset: const Offset(0, -70),
-        child: ClipRRect(
+    return Transform.translate(
+      offset: const Offset(-8, -100),
+      child: Container(
+        padding: EdgeInsets.symmetric(vertical: 4),
+        decoration: BoxDecoration(
+          color: Colors.black12,
           borderRadius: BorderRadius.circular(12),
-          child: AnimatedOpacity(
-            duration: const Duration(milliseconds: 500),
-            curve: Curves.easeIn,
-            opacity: widget.soundRecorderState.edge >= 50 ? 0 : 1,
-            child: Container(
-              height: 50 - widget.soundRecorderState.heightPosition < 0
-                  ? 0
-                  : 50 - widget.soundRecorderState.heightPosition,
-              color: Colors.grey.shade100,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: widget.lockIcon ??
-                    Stack(
-                      children: [
-                        Align(
-                          alignment: Alignment.topCenter,
-                          child: AnimatedOpacity(
-                              duration: const Duration(milliseconds: 500),
-                              curve: Curves.easeIn,
-                              opacity: widget.soundRecorderState.second % 2 != 0
-                                  ? 0
-                                  : 1,
-                              child: const Icon(Icons.lock_outline_rounded)),
-                        ),
-                        Align(
-                          alignment: Alignment.topCenter,
-                          child: AnimatedOpacity(
-                              duration: const Duration(milliseconds: 500),
-                              curve: Curves.easeIn,
-                              opacity: widget.soundRecorderState.second % 2 == 0
-                                  ? 0
-                                  : 1,
-                              child: const Icon(Icons.lock_open_rounded)),
-                        ),
-                      ],
-                    ),
-              ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.lock_outline_rounded,
+              color: Colors.white,
             ),
-          ),
+            AnimatedContainer(
+              duration: Duration(seconds: 1),
+              height: 15 - widget.soundRecorderState.heightPosition.clamp(0, 15),
+            ),
+            Icon(
+              Icons.keyboard_arrow_up_rounded,
+              color: Colors.white,
+            )
+          ],
         ),
       ),
     );

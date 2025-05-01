@@ -38,25 +38,38 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.only(top: 140, left: 4, right: 4),
-          child: Align(
-            alignment: Alignment.centerRight,
-            child: SocialMediaRecorder(
-              // maxRecordTimeInSecond: 5,
-              startRecording: () {
-                // function called when start recording
-              },
-              stopRecording: (_time) {
-                // function called when stop recording, return the recording time
-              },
-              sendRequestFunction: (soundFile, _time) {
-                //  print("the current path is ${soundFile.path}");
-              },
-              encode: AudioEncoderType.AAC,
+      appBar: AppBar(
+        title: Text('asdf'),
+      ),
+      backgroundColor: Colors.red,
+      body: Container(
+        decoration: BoxDecoration(
+          color: Colors.red,
+        ),
+        child: Column(
+          children: [
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.only(top: 140, left: 4, right: 4),
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: SocialMediaRecorder(
+                    // maxRecordTimeInSecond: 5,
+                    startRecording: () {
+                      // function called when start recording
+                    },
+                    stopRecording: (time) {
+                      // function called when stop recording, return the recording time
+                    },
+                    sendRequestFunction: (soundFile, time) {
+                      //  print("the current path is ${soundFile.path}");
+                    },
+                    encode: AudioEncoderType.AAC,
+                  ),
+                ),
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
