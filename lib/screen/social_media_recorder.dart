@@ -204,6 +204,7 @@ class _SocialMediaRecorder extends State<SocialMediaRecorder> {
 
     return Listener(
       onPointerDown: (details) async {
+        debugPrint('asdfasfdafs${details.position.dy}');
         state.setNewInitialDraggableHeight(details.position.dy);
         state.resetEdgePadding();
 
@@ -211,6 +212,9 @@ class _SocialMediaRecorder extends State<SocialMediaRecorder> {
         state.record(widget.startRecording);
       },
       onPointerUp: (details) async {
+        debugPrint('media${MediaQuery.of(context).size.width}');
+        debugPrint('upppppppp${details.position.dy}');
+
         if (!state.isLocked) {
           state.finishRecording();
         }

@@ -193,7 +193,7 @@ class SoundRecordNotifier extends ChangeNotifier {
       try {
         RenderBox box = key.currentContext?.findRenderObject() as RenderBox;
         Offset position = box.localToGlobal(Offset.zero);
-        if (position.dx <= MediaQuery.of(context).size.width * 0.4) {
+        if (position.dx <= MediaQuery.of(context).size.width * 0.7) {
           String time = "$minute:$second";
           if (stopRecording != null) stopRecording!(time);
           resetEdgePadding();
