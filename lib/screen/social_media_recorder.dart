@@ -92,7 +92,7 @@ class SocialMediaRecorder extends StatefulWidget {
     this.maxRecordTimeInSecond,
     this.storeSoundRecoringPath = "",
     required this.sendRequestFunction,
-    this.startRecording,
+    this. startRecording,
     this.stopRecording,
     this.recordIcon,
     this.lockButton,
@@ -115,7 +115,7 @@ class SocialMediaRecorder extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _SocialMediaRecorder createState() => _SocialMediaRecorder();
+  State<SocialMediaRecorder> createState() => _SocialMediaRecorder();
 }
 
 class _SocialMediaRecorder extends State<SocialMediaRecorder> {
