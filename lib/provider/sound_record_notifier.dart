@@ -248,12 +248,14 @@ class SoundRecordNotifier extends ChangeNotifier {
 
   /// this function to start record voice
   record(Function()? startRecord) async {
+    debugPrint('heree 1');
     if (!_isAcceptedPermission) {
       await Permission.microphone.request();
       await Permission.manageExternalStorage.request();
       await Permission.storage.request();
       _isAcceptedPermission = true;
     } else {
+      debugPrint('heree 2');
       buttonPressed = true;
       String recordFilePath = await getFilePath();
       _timer = Timer(const Duration(milliseconds: 900), () {
@@ -272,15 +274,20 @@ class SoundRecordNotifier extends ChangeNotifier {
 
   /// to check permission
   voidInitialSound() async {
-    // if (Platform.isIOS) _isAcceptedPermission = true;
-
     startRecord = false;
-    final status = await Permission.microphone.status;
+    PermissionStatus? status = await Permission.microphone.status;
+    debugPrint('voidInitialSound_status: $status');
+    if (status.isDenied && Platform.isIOS) {
+      status = PermissionStatus.granted;
+    }
     if (status.isGranted) {
       final result = await Permission.storage.request();
+      debugPrint('voidInitialSound_result: $result');
+
       if (result.isGranted) {
-        _isAcceptedPermission = true;
+        debugPrint('voidInitialSound__isAcceptedPermission: $_isAcceptedPermission');
       }
     }
+    _isAcceptedPermission = true;
   }
 }

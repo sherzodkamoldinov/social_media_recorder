@@ -92,7 +92,7 @@ class SocialMediaRecorder extends StatefulWidget {
     this.maxRecordTimeInSecond,
     this.storeSoundRecoringPath = "",
     required this.sendRequestFunction,
-    this. startRecording,
+    this.startRecording,
     this.stopRecording,
     this.recordIcon,
     this.lockButton,
@@ -204,17 +204,18 @@ class _SocialMediaRecorder extends State<SocialMediaRecorder> {
 
     return Listener(
       onPointerDown: (details) async {
-        debugPrint('asdfasfdafs${details.position.dy}');
-        state.setNewInitialDraggableHeight(details.position.dy);
-        state.resetEdgePadding();
+        debugPrint('listen start');
+        try {
+          state.setNewInitialDraggableHeight(details.position.dy);
+          state.resetEdgePadding();
 
-        soundRecordNotifier.isShow = true;
-        state.record(widget.startRecording);
+          soundRecordNotifier.isShow = true;
+          state.record(widget.startRecording);
+        } on Exception catch (e) {
+          debugPrint('some errorrrr: ${e.toString()}');
+        }
       },
       onPointerUp: (details) async {
-        debugPrint('media${MediaQuery.of(context).size.width}');
-        debugPrint('upppppppp${details.position.dy}');
-
         if (!state.isLocked) {
           state.finishRecording();
         }
