@@ -2,6 +2,7 @@ library social_media_recorder;
 
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:social_media_recorder/provider/sound_record_notifier.dart';
 import 'package:social_media_recorder/widgets/lock_record.dart';
@@ -204,8 +205,17 @@ class _SocialMediaRecorder extends State<SocialMediaRecorder> {
 
     return Listener(
       onPointerDown: (details) async {
-        debugPrint('listen start');
+        debugPrint('onPointerDown');
         try {
+          PermissionStatus? status = await Permission.microphone.status;
+          debugPrint('status: $status');
+          if (status != PermissionStatus.granted) {
+            await Permission.microphone.request();
+            status = await Permission.microphone.status;
+            if (status != PermissionStatus.granted) {
+              return;
+            }
+          }
           state.setNewInitialDraggableHeight(details.position.dy);
           state.resetEdgePadding();
 
