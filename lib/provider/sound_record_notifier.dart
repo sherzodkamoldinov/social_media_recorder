@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -273,21 +275,76 @@ class SoundRecordNotifier extends ChangeNotifier {
   }
 
   /// to check permission
-  voidInitialSound() async {
+  Future<void> voidInitialSound() async {
     startRecord = false;
-    PermissionStatus? status = await Permission.microphone.status;
-    debugPrint('voidInitialSound_status: $status');
-    if (status.isDenied && Platform.isIOS) {
-      status = PermissionStatus.granted;
-    }
-    if (status.isGranted) {
-      final result = await Permission.storage.request();
-      debugPrint('voidInitialSound_result: $result');
 
-      if (result.isGranted) {
-        debugPrint('voidInitialSound__isAcceptedPermission: $_isAcceptedPermission');
-      }
+    final micStatus = await Permission.microphone.status;
+
+    if (!micStatus.isGranted) {
+      _isAcceptedPermission = false;
+      return;
     }
+
+    final storageStatus = await Permission.storage.status;
+    final storageGranted = storageStatus.isGranted ||
+        await Permission.storage.request().then((value) => value.isGranted);
+
+    if (!storageGranted) {
+      _isAcceptedPermission = false;
+      return;
+    }
+
     _isAcceptedPermission = true;
+  }
+
+  Future<bool> checkAndRequestMicrophonePermission(BuildContext context) async {
+    PermissionStatus status = await Permission.microphone.status;
+
+    // Запрашиваем разрешение
+    if (status.isGranted) {
+      _isAcceptedPermission = true;
+      return true;
+    }
+
+    if (status.isPermanentlyDenied || status.isDenied) {
+      status = await Permission.microphone.request();
+    }
+    debugPrint('checkAndRequestMicrophonePermission: $status');
+
+    if (status.isPermanentlyDenied) {
+      // Разрешение отклонено навсегда, открываем настройки
+      if (context.mounted) {
+        await showPermissionDialog(context);
+      }
+      return false;
+    }
+
+    return false;
+  }
+
+  Future<void> showPermissionDialog(BuildContext context) async {
+    await showCupertinoModalPopup(
+      context: context,
+      builder: (context) => CupertinoAlertDialog(
+        title: const Text('Разрешение на микрофон'),
+        actions: [
+          CupertinoButton(
+            onPressed: () => Navigator.of(context).pop(), // просто закрыть
+            child: const Text('Отмена'),
+          ),
+
+          CupertinoButton(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              await openAppSettings(); // открываем настройки
+            },
+            child: const Text('Открыть\nнастройки'),
+          ),
+        ],
+        content: const Text(
+          'Для записи голосовых сообщений необходимо разрешение на использование микрофона. Пожалуйста, разрешите доступ в настройках приложения.',
+        ),
+      ),
+    );
   }
 }
