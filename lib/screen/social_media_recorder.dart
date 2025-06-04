@@ -204,8 +204,14 @@ class _SocialMediaRecorder extends State<SocialMediaRecorder> {
 
     return Listener(
       onPointerDown: (details) async {
-        debugPrint('listen start');
+        debugPrint('onPointerDown');
         try {
+          bool hasPermission = await soundRecordNotifier.checkAndRequestMicrophonePermission(context);
+          if (!hasPermission) {
+            debugPrint('Микрофон не разрешён');
+            return;
+          }
+          debugPrint('here');
           state.setNewInitialDraggableHeight(details.position.dy);
           state.resetEdgePadding();
 
@@ -233,8 +239,8 @@ class _SocialMediaRecorder extends State<SocialMediaRecorder> {
                     borderRadius: soundRecordNotifier.isShow
                         ? BorderRadius.circular(12)
                         : widget.radius != null && !soundRecordNotifier.isShow
-                            ? widget.radius
-                            : BorderRadius.circular(0),
+                        ? widget.radius
+                        : BorderRadius.circular(0),
                   ),
                   child: Stack(
                     children: [

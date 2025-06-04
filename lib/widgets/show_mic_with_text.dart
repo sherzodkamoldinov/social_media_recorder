@@ -67,12 +67,12 @@ class ShowMicWithText extends StatelessWidget {
                         : Colors.transparent,
                     boxShadow: soundRecorderState.buttonPressed
                         ? [
-                            BoxShadow(
-                              color: shadowColor?.withValues(alpha: .5) ?? Colors.transparent,
-                              blurRadius: soundRecorderState.second % 2 != 0 ? 0 : 20,
-                              spreadRadius: 5,
-                            )
-                          ]
+                      BoxShadow(
+                        color: shadowColor?.withValues(alpha: .5) ?? Colors.transparent,
+                        blurRadius: soundRecorderState.second % 2 != 0 ? 0 : 20,
+                        spreadRadius: 5,
+                      )
+                    ]
                         : [],
                   ),
                   child: Padding(

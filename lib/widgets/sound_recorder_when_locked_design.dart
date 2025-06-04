@@ -72,12 +72,12 @@ class SoundRecorderWhenLockedDesign extends StatelessWidget {
                     color: recordIconWhenLockBackGroundColor,
                     boxShadow: soundRecordNotifier.buttonPressed
                         ? [
-                            BoxShadow(
-                              color: shadowColor?.withValues(alpha: .5) ?? Colors.transparent,
-                              blurRadius: soundRecordNotifier.second % 2 != 0 ? 20 : 0,
-                              spreadRadius: 5,
-                            ),
-                          ]
+                      BoxShadow(
+                        color: shadowColor?.withValues(alpha: .5) ?? Colors.transparent,
+                        blurRadius: soundRecordNotifier.second % 2 != 0 ? 20 : 0,
+                        spreadRadius: 5,
+                      ),
+                    ]
                         : [],
                   ),
                   child: Center(
