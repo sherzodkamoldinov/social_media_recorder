@@ -94,7 +94,10 @@ class SoundRecordNotifier extends ChangeNotifier {
   });
 
   /// To increase counter after 1 sencond
-  void _mapCounterGenerater() {
+  void _mapCounterGenerater() async {
+    if(second == 0) {
+     await Future<void>.delayed(const Duration(seconds: 1));
+    }
     _timerCounter = Timer(const Duration(seconds: 1), () {
       _increaseCounterWhilePressed();
       if (buttonPressed) _mapCounterGenerater();
@@ -248,16 +251,15 @@ class SoundRecordNotifier extends ChangeNotifier {
 
   /// this function to start record voice
   record(Function()? startRecord) async {
-    debugPrint('heree 1');
     if (!_isAcceptedPermission) {
       await Permission.microphone.request();
       await Permission.manageExternalStorage.request();
       await Permission.storage.request();
       _isAcceptedPermission = true;
     } else {
-      debugPrint('heree 2');
       buttonPressed = true;
       String recordFilePath = await getFilePath();
+      
       _timer = Timer(const Duration(milliseconds: 900), () {
         recordMp3.start(const RecordConfig(), path: recordFilePath);
       });
