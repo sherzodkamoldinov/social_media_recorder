@@ -41,10 +41,10 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text('asdf'),
       ),
-      backgroundColor: Colors.red,
+      backgroundColor: Colors.green,
       body: Container(
         decoration: BoxDecoration(
-          color: Colors.red,
+          color: Colors.green,
         ),
         child: Column(
           children: [
@@ -54,7 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Align(
                   alignment: Alignment.centerRight,
                   child: SocialMediaRecorder(
-                    iconsColor:Colors.red,
+                    iconsColor:Colors.blue,
                     // maxRecordTimeInSecond: 5,
                     startRecording: () {
                       // function called when start recording
