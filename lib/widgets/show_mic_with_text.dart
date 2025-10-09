@@ -92,14 +92,17 @@ class ShowMicWithText extends StatelessWidget {
         if (shouldShowText)
           Expanded(
             child: Container(
-              height: 30,
+              height: fullRecordPackageHeight,
+              decoration: BoxDecoration(
               color: backGroundColor ?? Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(12)
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(left: 8, right: 16),
+                    padding: const EdgeInsets.only(left: 0, right: 16),
                     child: DefaultTextStyle(
                       overflow: TextOverflow.clip,
                       maxLines: 1,
