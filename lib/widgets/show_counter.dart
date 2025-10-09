@@ -19,12 +19,14 @@ class ShowCounter extends StatelessWidget {
   }) : super(key: key);
 
   @override
+
+
   Widget build(BuildContext context) {
     return Align(
       alignment: Alignment.centerLeft,
       child: Container(
         height: fullRecordPackageHeight,
-        width: MediaQuery.of(context).size.width * 0.4,
+        width: MediaQuery.of(context).size.width * 0.3,
         decoration: BoxDecoration(
             color: counterBackGroundColor ?? Colors.grey.shade100,
             borderRadius: BorderRadius.horizontal(left: Radius.circular(12))
