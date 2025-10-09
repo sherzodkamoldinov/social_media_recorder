@@ -26,7 +26,7 @@ class ShowCounter extends StatelessWidget {
       alignment: Alignment.centerLeft,
       child: Container(
         height: fullRecordPackageHeight,
-        width: MediaQuery.of(context).size.width * 0.3,
+        width: MediaQuery.of(context).size.width * 0.35,
         decoration: BoxDecoration(
             color: counterBackGroundColor ?? Colors.grey.shade100,
             borderRadius: BorderRadius.horizontal(left: Radius.circular(12))
@@ -37,7 +37,7 @@ class ShowCounter extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(width: 30),
+              const SizedBox(width: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.center,
