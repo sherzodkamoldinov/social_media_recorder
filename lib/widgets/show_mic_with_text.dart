@@ -18,8 +18,14 @@ class ShowMicWithText extends StatelessWidget {
   final double fullRecordPackageHeight;
   final double initRecordPackageWidth;
 
+  /// Gradient the "slide to cancel" shimmer is painted with. `ColorizeAnimatedText`
+  /// paints the glyphs with its own shader, so the colour of
+  /// [slideToCancelTextStyle] is ignored — a dark theme has to override these
+  /// colours here or the text stays black. Defaults to the original values.
+  final List<Color>? slideToCancelColorizeColors;
+
   // ignore: sort_constructors_first
-  ShowMicWithText({
+  const ShowMicWithText({
     required this.backGroundColor,
     required this.shadowColor,
     required this.initRecordPackageWidth,
@@ -31,8 +37,9 @@ class ShowMicWithText extends StatelessWidget {
     required this.slideToCancelText,
     required this.recordIcon,
     required this.counterBackGroundColor,
+    this.slideToCancelColorizeColors,
   }) : super(key: key);
-  final colorizeColors = [
+  static final defaultColorizeColors = [
     Colors.black,
     Colors.grey.shade200,
     Colors.black,
@@ -114,7 +121,7 @@ class ShowMicWithText extends StatelessWidget {
                           ColorizeAnimatedText(
                             slideToCancelText ?? "",
                             textStyle: slideToCancelTextStyle ?? colorizeTextStyle,
-                            colors: colorizeColors,
+                            colors: slideToCancelColorizeColors ?? defaultColorizeColors,
                           ),
                         ],
                         isRepeatingAnimation: true,

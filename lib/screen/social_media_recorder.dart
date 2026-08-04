@@ -72,6 +72,11 @@ class SocialMediaRecorder extends StatefulWidget {
   /// counter while recording. Defaults to red.
   final Color? counterMicColor;
 
+  /// use to change the shimmer gradient of the "slide to cancel" text. The
+  /// animated text paints with its own shader, so [slideToCancelTextStyle]
+  /// cannot set its colour — pass theme colours here for dark mode.
+  final List<Color>? slideToCancelColorizeColors;
+
   // use to change lock icon to design you need it
   final Widget? lockButton;
 
@@ -102,6 +107,7 @@ class SocialMediaRecorder extends StatefulWidget {
     this.lockButton,
     this.counterBackGroundColor,
     this.counterMicColor,
+    this.slideToCancelColorizeColors,
     this.recordIconWhenLockedRecord,
     this.recordIconBackGroundColor = Colors.blue,
     this.recordIconWhenLockBackGroundColor = Colors.blue,
@@ -261,6 +267,7 @@ class _SocialMediaRecorder extends State<SocialMediaRecorder> {
                           shouldShowText: soundRecordNotifier.isShow,
                           soundRecorderState: state,
                           slideToCancelTextStyle: widget.slideToCancelTextStyle,
+                          slideToCancelColorizeColors: widget.slideToCancelColorizeColors,
                           slideToCancelText: widget.slideToCancelText,
                         ),
                       ),
