@@ -94,10 +94,23 @@ class SoundRecordNotifier extends ChangeNotifier {
   });
 
   /// To increase counter after 1 sencond
+  ///
+  /// The `await` below is the reason this method needs the guards: tapping the
+  /// record button and releasing it within that second leaves this call sitting
+  /// in the delay, where [resetEdgePadding] cannot cancel it — it has no timer
+  /// to cancel yet. Without the guards every spammed tap left one such orphan
+  /// behind; they all resumed at once on the next real recording (they only
+  /// stop while `buttonPressed` is false) and incremented the counter several
+  /// times per second, so the max-record-time limit fired within seconds.
   void _mapCounterGenerater() async {
     if(second == 0) {
      await Future<void>.delayed(const Duration(seconds: 1));
+     /// Recording was already finished or cancelled while waiting — this chain
+     /// must die instead of scheduling a timer nobody owns.
+     if (!buttonPressed) return;
     }
+    /// Never keep two counter chains alive: only the latest timer may run.
+    _timerCounter?.cancel();
     _timerCounter = Timer(const Duration(seconds: 1), () {
       _increaseCounterWhilePressed();
       if (buttonPressed) _mapCounterGenerater();
@@ -128,8 +141,10 @@ class SoundRecordNotifier extends ChangeNotifier {
     key = GlobalKey();
     heightPosition = 0;
     lockScreenRecord = false;
-    if (_timer != null) _timer!.cancel();
-    if (_timerCounter != null) _timerCounter!.cancel();
+    _timer?.cancel();
+    _timer = null;
+    _timerCounter?.cancel();
+    _timerCounter = null;
     recordMp3.stop();
     notifyListeners();
   }
@@ -251,6 +266,11 @@ class SoundRecordNotifier extends ChangeNotifier {
 
   /// this function to start record voice
   record(Function()? startRecord) async {
+    /// A recording is already running — a second press (button spam, or a
+    /// stray pointer event) must not start a parallel one: it would overwrite
+    /// the pending timers and leave the previous recorder instance running.
+    if (buttonPressed) return;
+
     if (!_isAcceptedPermission) {
       await Permission.microphone.request();
       await Permission.manageExternalStorage.request();
@@ -259,7 +279,11 @@ class SoundRecordNotifier extends ChangeNotifier {
     } else {
       buttonPressed = true;
       String recordFilePath = await getFilePath();
-      
+
+      /// Drop whatever the previous (possibly aborted) recording left behind.
+      _timer?.cancel();
+      _timerCounter?.cancel();
+
       _timer = Timer(const Duration(milliseconds: 900), () {
         recordMp3.start(const RecordConfig(), path: recordFilePath);
       });
