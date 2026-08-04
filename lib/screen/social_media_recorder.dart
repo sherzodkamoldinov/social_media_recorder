@@ -68,6 +68,10 @@ class SocialMediaRecorder extends StatefulWidget {
   // use to change the counter back ground color
   final Color? counterBackGroundColor;
 
+  /// use to change the colour of the blinking mic icon shown next to the
+  /// counter while recording. Defaults to red.
+  final Color? counterMicColor;
+
   // use to change lock icon to design you need it
   final Widget? lockButton;
 
@@ -97,6 +101,7 @@ class SocialMediaRecorder extends StatefulWidget {
     this.recordIcon,
     this.lockButton,
     this.counterBackGroundColor,
+    this.counterMicColor,
     this.recordIconWhenLockedRecord,
     this.recordIconBackGroundColor = Colors.blue,
     this.recordIconWhenLockBackGroundColor = Colors.blue,
@@ -193,6 +198,7 @@ class _SocialMediaRecorder extends State<SocialMediaRecorder> {
         shadowColor: widget.shadowColor,
         cancelTextStyle: widget.cancelTextStyle,
         counterBackGroundColor: widget.counterBackGroundColor,
+        counterMicColor: widget.counterMicColor,
         recordIconWhenLockBackGroundColor: widget.recordIconWhenLockBackGroundColor ?? Colors.blue,
         counterTextStyle: widget.counterTextStyle,
         recordIconWhenLockedRecord: widget.recordIconWhenLockedRecord,
@@ -262,6 +268,8 @@ class _SocialMediaRecorder extends State<SocialMediaRecorder> {
                         Center(
                           child: ShowCounter(
                               counterBackGroundColor: widget.counterBackGroundColor,
+                              counterMicColor: widget.counterMicColor,
+                              counterTextStyle: widget.counterTextStyle,
                               soundRecorderState: state,
                               fullRecordPackageHeight: widget.fullRecordPackageHeight),
                         ),

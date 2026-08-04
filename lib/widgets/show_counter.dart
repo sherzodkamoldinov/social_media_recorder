@@ -9,12 +9,17 @@ class ShowCounter extends StatelessWidget {
   final TextStyle? counterTextStyle;
   final Color? counterBackGroundColor;
   final double fullRecordPackageHeight;
+
+  /// Colour of the blinking mic icon next to the counter. Defaults to red,
+  /// which is unreadable on some themes — pass a theme colour instead.
+  final Color? counterMicColor;
   // ignore: sort_constructors_first
   const ShowCounter({
     required this.soundRecorderState,
     required this.fullRecordPackageHeight,
     Key? key,
     this.counterTextStyle,
+    this.counterMicColor,
     required this.counterBackGroundColor,
   }) : super(key: key);
 
@@ -48,7 +53,10 @@ class ShowCounter extends StatelessWidget {
                         const TextStyle(color: Colors.black),
                   ),
                   const SizedBox(width: 3),
-                  const Text(" : "),
+                  Text(
+                    " : ",
+                    style: counterTextStyle ?? const TextStyle(color: Colors.black),
+                  ),
                   Text(
                     soundRecorderState.minute.toString().padLeft(2, '0'),
                     style: counterTextStyle ??
@@ -60,9 +68,9 @@ class ShowCounter extends StatelessWidget {
               AnimatedOpacity(
                 duration: const Duration(seconds: 1),
                 opacity: soundRecorderState.second % 2 == 0 ? 1 : 0,
-                child: const Icon(
+                child: Icon(
                   Icons.mic,
-                  color: Colors.red,
+                  color: counterMicColor ?? Colors.red,
                 ),
               ),
               const SizedBox(width: 10),
