@@ -149,14 +149,43 @@ class SoundRecordNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Maps the public [AudioEncoderType] onto the `record` encoder that is
+  /// actually handed to the platform recorder.
+  AudioEncoder _getRecordEncoder() {
+    switch (encode) {
+      case AudioEncoderType.AAC:
+        return AudioEncoder.aacLc;
+      case AudioEncoderType.AAC_LD:
+        return AudioEncoder.aacEld;
+      case AudioEncoderType.AAC_HE:
+        return AudioEncoder.aacHe;
+      case AudioEncoderType.AMR_NB:
+        return AudioEncoder.amrNb;
+      case AudioEncoderType.AMR_WB:
+        return AudioEncoder.amrWb;
+      case AudioEncoderType.OPUS:
+        return AudioEncoder.opus;
+      case AudioEncoderType.WAV:
+        return AudioEncoder.wav;
+    }
+  }
+
   String _getSoundExtension() {
-    if (encode == AudioEncoderType.AAC ||
-        encode == AudioEncoderType.AAC_LD ||
-        encode == AudioEncoderType.AAC_HE ||
-        encode == AudioEncoderType.OPUS) {
-      return ".m4a";
-    } else {
-      return ".3gp";
+    switch (encode) {
+      case AudioEncoderType.AAC:
+      case AudioEncoderType.AAC_LD:
+      case AudioEncoderType.AAC_HE:
+        return ".m4a";
+
+      /// Opus lands in different containers per platform:
+      /// OGG on Android, CAF on iOS — the extension has to follow.
+      case AudioEncoderType.OPUS:
+        return Platform.isIOS ? ".caf" : ".opus";
+      case AudioEncoderType.WAV:
+        return ".wav";
+      case AudioEncoderType.AMR_NB:
+      case AudioEncoderType.AMR_WB:
+        return ".3gp";
     }
   }
 
@@ -285,7 +314,17 @@ class SoundRecordNotifier extends ChangeNotifier {
       _timerCounter?.cancel();
 
       _timer = Timer(const Duration(milliseconds: 900), () {
-        recordMp3.start(const RecordConfig(), path: recordFilePath);
+        recordMp3.start(
+          RecordConfig(
+            encoder: _getRecordEncoder(),
+
+            /// Voice messages are speech only, and the phone mic is mono
+            /// anyway — 16 kHz mono is what every ASR engine resamples to.
+            sampleRate: 16000,
+            numChannels: 1,
+          ),
+          path: recordFilePath,
+        );
       });
 
       if (startRecord != null) {

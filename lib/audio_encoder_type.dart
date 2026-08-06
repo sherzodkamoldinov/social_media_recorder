@@ -26,4 +26,9 @@ enum AudioEncoderType {
   /// /!\ SDK 11 on iOs /!\
   // ignore: constant_identifier_names
   OPUS,
+
+  /// Uncompressed waveform audio (pcm16bit with headers).
+  /// Will output to WAV format container on every platform.
+  // ignore: constant_identifier_names
+  WAV,
 }

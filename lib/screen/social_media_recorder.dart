@@ -139,6 +139,7 @@ class _SocialMediaRecorder extends State<SocialMediaRecorder> {
       startRecording: widget.startRecording ?? () {},
       stopRecording: widget.stopRecording ?? (String x) {},
       sendRequestFunction: widget.sendRequestFunction,
+      encode: widget.encode,
     );
 
     soundRecordNotifier.initialStorePathRecord = widget.storeSoundRecoringPath ?? "";
@@ -158,6 +159,7 @@ class _SocialMediaRecorder extends State<SocialMediaRecorder> {
     soundRecordNotifier.startRecording = widget.startRecording ?? () {};
     soundRecordNotifier.stopRecording = widget.stopRecording ?? (String x) {};
     soundRecordNotifier.sendRequestFunction = widget.sendRequestFunction;
+    soundRecordNotifier.encode = widget.encode;
     return MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (context) => soundRecordNotifier),
