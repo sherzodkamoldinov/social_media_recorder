@@ -251,45 +251,52 @@ class _SocialMediaRecorder extends State<SocialMediaRecorder> {
         width: (soundRecordNotifier.isShow) ? MediaQuery.of(context).size.width : widget.initRecordPackageWidth,
         child: Stack(
           children: [
+            /// The drag offset must NOT be applied to this panel.
+            ///
+            /// It used to sit here as `Padding(right: state.edge)`, which shrank
+            /// the whole panel from the right. The panel is a transparent
+            /// overlay laid over the chat input row, so the strip it gave up
+            /// exposed whatever sat underneath — mid-drag the camera button and
+            /// the text field showed through.
+            ///
+            /// The panel now keeps its full width for the whole gesture and only
+            /// the mic button travels, inside [ShowMicWithText].
             Center(
-              child: Padding(
-                padding: EdgeInsets.only(right: state.edge),
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: soundRecordNotifier.isShow
-                        ? BorderRadius.circular(12)
-                        : widget.radius != null && !soundRecordNotifier.isShow
-                        ? widget.radius
-                        : BorderRadius.circular(0),
-                  ),
-                  child: Stack(
-                    children: [
-                      Center(
-                        child: ShowMicWithText(
-                          initRecordPackageWidth: widget.initRecordPackageWidth,
-                          counterBackGroundColor: widget.counterBackGroundColor,
-                          shadowColor: widget.shadowColor,
-                          backGroundColor: widget.recordIconBackGroundColor,
-                          fullRecordPackageHeight: widget.fullRecordPackageHeight,
-                          recordIcon: widget.recordIcon,
-                          shouldShowText: soundRecordNotifier.isShow,
-                          soundRecorderState: state,
-                          slideToCancelTextStyle: widget.slideToCancelTextStyle,
-                          slideToCancelColorizeColors: widget.slideToCancelColorizeColors,
-                          slideToCancelText: widget.slideToCancelText,
-                        ),
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: soundRecordNotifier.isShow
+                      ? BorderRadius.circular(12)
+                      : widget.radius != null && !soundRecordNotifier.isShow
+                          ? widget.radius
+                          : BorderRadius.circular(0),
+                ),
+                child: Stack(
+                  children: [
+                    Center(
+                      child: ShowMicWithText(
+                        initRecordPackageWidth: widget.initRecordPackageWidth,
+                        counterBackGroundColor: widget.counterBackGroundColor,
+                        shadowColor: widget.shadowColor,
+                        backGroundColor: widget.recordIconBackGroundColor,
+                        fullRecordPackageHeight: widget.fullRecordPackageHeight,
+                        recordIcon: widget.recordIcon,
+                        shouldShowText: soundRecordNotifier.isShow,
+                        soundRecorderState: state,
+                        slideToCancelTextStyle: widget.slideToCancelTextStyle,
+                        slideToCancelColorizeColors: widget.slideToCancelColorizeColors,
+                        slideToCancelText: widget.slideToCancelText,
                       ),
-                      if (soundRecordNotifier.isShow)
-                        Center(
-                          child: ShowCounter(
-                              counterBackGroundColor: widget.counterBackGroundColor,
-                              counterMicColor: widget.counterMicColor,
-                              counterTextStyle: widget.counterTextStyle,
-                              soundRecorderState: state,
-                              fullRecordPackageHeight: widget.fullRecordPackageHeight),
-                        ),
-                    ],
-                  ),
+                    ),
+                    if (soundRecordNotifier.isShow)
+                      Center(
+                        child: ShowCounter(
+                            counterBackGroundColor: widget.counterBackGroundColor,
+                            counterMicColor: widget.counterMicColor,
+                            counterTextStyle: widget.counterTextStyle,
+                            soundRecorderState: state,
+                            fullRecordPackageHeight: widget.fullRecordPackageHeight),
+                      ),
+                  ],
                 ),
               ),
             ),

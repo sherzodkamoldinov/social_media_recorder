@@ -58,38 +58,44 @@ class ShowMicWithText extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Transform.scale(
-              key: soundRecorderState.key,
-              scale: soundRecorderState.buttonPressed ? 1.3 : 1,
-              child: AnimatedContainer(
-                duration: const Duration(seconds: 1),
-                width: soundRecorderState.buttonPressed ? fullRecordPackageHeight : initRecordPackageWidth - 5,
-                height: fullRecordPackageHeight,
+            /// The drag offset lives here rather than on the panel: translating
+            /// paints the button elsewhere without touching layout, so the bar
+            /// behind it keeps covering the chat input row for the whole gesture.
+            Transform.translate(
+              offset: Offset(-soundRecorderState.edge, 0),
+              child: Transform.scale(
+                key: soundRecorderState.key,
+                scale: soundRecorderState.buttonPressed ? 1.3 : 1,
                 child: AnimatedContainer(
                   duration: const Duration(seconds: 1),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: (soundRecorderState.buttonPressed)
-                        ? backGroundColor ?? Theme.of(context).colorScheme.secondary
-                        : Colors.transparent,
-                    boxShadow: soundRecorderState.buttonPressed
-                        ? [
-                      BoxShadow(
-                        color: shadowColor?.withValues(alpha: .5) ?? Colors.transparent,
-                        blurRadius: soundRecorderState.second % 2 != 0 ? 0 : 20,
-                        spreadRadius: 5,
-                      )
-                    ]
-                        : [],
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(4.0),
-                    child: recordIcon ??
-                        Icon(
-                          Icons.mic,
-                          size: 28,
-                          color: (soundRecorderState.buttonPressed) ? Colors.grey.shade200 : Colors.black,
-                        ),
+                  width: soundRecorderState.buttonPressed ? fullRecordPackageHeight : initRecordPackageWidth - 5,
+                  height: fullRecordPackageHeight,
+                  child: AnimatedContainer(
+                    duration: const Duration(seconds: 1),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: (soundRecorderState.buttonPressed)
+                          ? backGroundColor ?? Theme.of(context).colorScheme.secondary
+                          : Colors.transparent,
+                      boxShadow: soundRecorderState.buttonPressed
+                          ? [
+                              BoxShadow(
+                                color: shadowColor?.withValues(alpha: .5) ?? Colors.transparent,
+                                blurRadius: soundRecorderState.second % 2 != 0 ? 0 : 20,
+                                spreadRadius: 5,
+                              )
+                            ]
+                          : [],
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: recordIcon ??
+                          Icon(
+                            Icons.mic,
+                            size: 28,
+                            color: (soundRecorderState.buttonPressed) ? Colors.grey.shade200 : Colors.black,
+                          ),
+                    ),
                   ),
                 ),
               ),
@@ -101,9 +107,7 @@ class ShowMicWithText extends StatelessWidget {
             child: Container(
               height: fullRecordPackageHeight,
               decoration: BoxDecoration(
-              color: backGroundColor ?? Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(12)
-              ),
+                  color: backGroundColor ?? Colors.grey.shade100, borderRadius: BorderRadius.circular(12)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
