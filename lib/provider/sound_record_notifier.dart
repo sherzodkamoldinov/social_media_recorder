@@ -137,8 +137,13 @@ class SoundRecordNotifier extends ChangeNotifier {
         String path = mPath;
         String time = "$minute:$second";
         sendRequestFunction(File.fromUri(Uri(path: path)), time);
-        stopRecording!(time);
       }
+
+      /// Reported on every release, including a tap too short to produce a file.
+      /// The callback is documented to fire "even if time < 1" but used to sit
+      /// inside the branch above, so a short tap left callers that put UI up on
+      /// [startRecording] with no signal to take it down again.
+      stopRecording?.call("$minute:$second");
     }
     resetEdgePadding();
   }
