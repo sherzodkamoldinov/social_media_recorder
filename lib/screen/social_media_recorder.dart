@@ -179,7 +179,9 @@ class _SocialMediaRecorder extends State<SocialMediaRecorder> {
             state.updateScrollValue(scrollEnd.globalPosition, context);
           },
           onHorizontalDragEnd: (x) {
-            if (state.buttonPressed && !state.isLocked) state.finishRecording();
+            /// Send or cancel is decided here, on release — see
+            /// [SoundRecordNotifier.releaseRecording].
+            if (state.buttonPressed && !state.isLocked) state.releaseRecording();
           },
           child: Container(
             decoration: const BoxDecoration(
@@ -236,8 +238,12 @@ class _SocialMediaRecorder extends State<SocialMediaRecorder> {
         }
       },
       onPointerUp: (details) async {
+        /// Fires for the same lift as `onHorizontalDragEnd` above, so it must
+        /// take the same decision — sending unconditionally here would send the
+        /// message the user just dragged away to cancel. Whichever fires first
+        /// wins; `releaseRecording` makes the second call a no-op.
         if (!state.isLocked) {
-          state.finishRecording();
+          state.releaseRecording();
         }
       },
       child: AnimatedContainer(

@@ -18,8 +18,22 @@ class SoundRecordNotifier extends ChangeNotifier {
   /// This time for counter wait about 1 send to increase counter
   Timer? _timerCounter;
 
-  /// Use last to check where the last draggable in X
-  double last = 0;
+  /// X of the previous drag update, used to derive how far the finger moved
+  /// since. `null` until the first update of a gesture — the very first event
+  /// has nothing to compare against and must not shift the button.
+  double? last;
+
+  /// True while the button has been dragged far enough left that lifting the
+  /// finger cancels the recording.
+  ///
+  /// Only a flag: the cancel itself happens on release, never mid-drag, so the
+  /// user can still slide back and send.
+  bool isCancelZoneReached = false;
+
+  /// How far the button must travel left before a release cancels, as a
+  /// fraction of the screen width. Telegram asks for roughly this much — far
+  /// enough to be deliberate, close enough to reach with one thumb.
+  static const double _cancelDragFraction = 0.5;
 
   /// Used when user enter the needed path
   String initialStorePathRecord = "";
@@ -129,11 +143,43 @@ class SoundRecordNotifier extends ChangeNotifier {
     resetEdgePadding();
   }
 
+  /// Throws the recording away: [sendRequestFunction] is never called, so
+  /// nothing is uploaded. Mirrors what the old inline cancel did — report the
+  /// elapsed time through [stopRecording], then reset.
+  void cancelRecording() {
+    if (buttonPressed) {
+      stopRecording?.call("$minute:$second");
+    }
+    resetEdgePadding();
+  }
+
+  /// The single place that decides what a finger lift means.
+  ///
+  /// Both `onPointerUp` on the mic button and `onHorizontalDragEnd` on the
+  /// surrounding detector fire for the same lift, so the decision cannot live
+  /// in either of them alone — whichever arrives first must win and the other
+  /// must become a no-op. [buttonPressed] is cleared by `resetEdgePadding`, so
+  /// the guard below does exactly that.
+  void releaseRecording() {
+    if (!buttonPressed) return;
+    if (isCancelZoneReached) {
+      cancelRecording();
+    } else {
+      finishRecording();
+    }
+  }
+
   /// used to reset all value to initial value when end the record
   resetEdgePadding() async {
     _localCounterForMaxRecordTime = 0;
     isLocked = false;
     edge = 0;
+
+    /// Both must go back to their pristine values, otherwise the next recording
+    /// starts with a stale finger position (one huge jump on the first update)
+    /// and, worse, already inside the cancel zone.
+    last = null;
+    isCancelZoneReached = false;
     buttonPressed = false;
     second = 0;
     minute = 0;
@@ -237,30 +283,26 @@ class SoundRecordNotifier extends ChangeNotifier {
 
       /// this operation for update X oriantation
       /// draggable to the left or right place
-      try {
-        RenderBox box = key.currentContext?.findRenderObject() as RenderBox;
-        Offset position = box.localToGlobal(Offset.zero);
-        if (position.dx <= MediaQuery.of(context).size.width * 0.75) {
-          String time = "$minute:$second";
-          if (stopRecording != null) stopRecording!(time);
-          resetEdgePadding();
-        } else if (x.dx >= MediaQuery.of(context).size.width) {
-          edge = 0;
-          edge = 0;
-        } else {
-          if (x.dx <= MediaQuery.of(context).size.width * 0.5) {}
-          if (last < x.dx) {
-            edge = edge -= x.dx / 200;
-            if (edge < 0) {
-              edge = 0;
-            }
-          } else if (last > x.dx) {
-            edge = edge += x.dx / 200;
-          }
-          last = x.dx;
-        }
-        // ignore: empty_catches
-      } catch (e) {}
+
+      /// The button follows the finger one to one.
+      ///
+      /// It used to move by `x.dx / 200` — a fraction of the finger's ABSOLUTE
+      /// screen coordinate rather than of how far it had actually moved. With a
+      /// finger near the right edge of a 1080 px screen that is ~5 px of travel
+      /// per update, whether or not the finger moved at all, and drag updates
+      /// arrive ~60 times a second. The button therefore raced off to the left
+      /// on the faintest touch and the cancel threshold was crossed instantly.
+      final double previous = last ?? x.dx;
+      edge += previous - x.dx;
+      if (edge < 0) edge = 0;
+      last = x.dx;
+
+      /// Reaching the zone is only recorded here, never acted upon: cancelling
+      /// used to happen right in this handler, which killed the recording while
+      /// the finger was still down and left no way back. The decision belongs
+      /// to the release — see [releaseRecording].
+      isCancelZoneReached = edge >= MediaQuery.of(context).size.width * _cancelDragFraction;
+
       notifyListeners();
     }
   }
