@@ -53,8 +53,11 @@ class SoundRecorderWhenLockedDesign extends StatelessWidget {
       ),
       child: InkWell(
         onTap: () {
-          soundRecordNotifier.isShow = false;
-          soundRecordNotifier.resetEdgePadding();
+          /// Goes through cancelRecording rather than resetEdgePadding: the
+          /// latter tears the state down silently, so callers that put UI up on
+          /// [SocialMediaRecorder.startRecording] never heard that the
+          /// recording had ended and were left stuck.
+          soundRecordNotifier.cancelRecording();
         },
         child: Row(
           children: [
