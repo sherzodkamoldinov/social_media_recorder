@@ -18,6 +18,13 @@ class ShowMicWithText extends StatelessWidget {
   final double fullRecordPackageHeight;
   final double initRecordPackageWidth;
 
+  /// The elapsed-time readout, laid out INSIDE the bar ahead of the label.
+  ///
+  /// It used to be a separate `Stack` layer painted over this widget, which
+  /// clipped any "slide to cancel" translation long enough to reach under it.
+  /// Passing it in as a sibling lets the row give each part its own space.
+  final Widget? counter;
+
   /// Gradient the "slide to cancel" shimmer is painted with. `ColorizeAnimatedText`
   /// paints the glyphs with its own shader, so the colour of
   /// [slideToCancelTextStyle] is ignored — a dark theme has to override these
@@ -37,6 +44,7 @@ class ShowMicWithText extends StatelessWidget {
     required this.slideToCancelText,
     required this.recordIcon,
     required this.counterBackGroundColor,
+    this.counter,
     this.slideToCancelColorizeColors,
   }) : super(key: key);
   static final defaultColorizeColors = [
@@ -100,18 +108,24 @@ class ShowMicWithText extends StatelessWidget {
           Expanded(
             child: Container(
               height: fullRecordPackageHeight,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
-              color: backGroundColor ?? Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(12)
+                color: counterBackGroundColor ?? backGroundColor ?? Colors.grey.shade100,
+                // Fully rounded rather than a 12 px box: the bar sits next to a
+                // circular mic button, and matching that curvature is what stops
+                // the recording row from reading as stacked rectangles.
+                borderRadius: BorderRadius.circular(fullRecordPackageHeight / 2),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 0, right: 16),
+                  if (counter != null) ...[
+                    counter!,
+                    const SizedBox(width: 12),
+                  ],
+                  Expanded(
                     child: DefaultTextStyle(
-                      overflow: TextOverflow.clip,
+                      overflow: TextOverflow.ellipsis,
                       maxLines: 1,
                       style: const TextStyle(
                         fontSize: 14.0,

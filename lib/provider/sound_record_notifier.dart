@@ -298,15 +298,23 @@ class SoundRecordNotifier extends ChangeNotifier {
       /// arrive ~60 times a second. The button therefore raced off to the left
       /// on the faintest touch and the cancel threshold was crossed instantly.
       final double previous = last ?? x.dx;
+      final double cancelThreshold = MediaQuery.of(context).size.width * _cancelDragFraction;
       edge += previous - x.dx;
+
+      /// Clamped at both ends. Past [cancelThreshold] the decision is already
+      /// made, so more travel buys nothing and the panel would keep sliding off
+      /// the left edge of the screen. Stopping the button there also gives the
+      /// gesture a physical end stop — the finger feels where "release to
+      /// cancel" begins instead of guessing.
       if (edge < 0) edge = 0;
+      if (edge > cancelThreshold) edge = cancelThreshold;
       last = x.dx;
 
       /// Reaching the zone is only recorded here, never acted upon: cancelling
       /// used to happen right in this handler, which killed the recording while
       /// the finger was still down and left no way back. The decision belongs
       /// to the release — see [releaseRecording].
-      isCancelZoneReached = edge >= MediaQuery.of(context).size.width * _cancelDragFraction;
+      isCancelZoneReached = edge >= cancelThreshold;
 
       notifyListeners();
     }

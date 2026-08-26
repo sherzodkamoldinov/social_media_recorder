@@ -262,33 +262,32 @@ class _SocialMediaRecorder extends State<SocialMediaRecorder> {
                         ? widget.radius
                         : BorderRadius.circular(0),
                   ),
-                  child: Stack(
-                    children: [
-                      Center(
-                        child: ShowMicWithText(
-                          initRecordPackageWidth: widget.initRecordPackageWidth,
-                          counterBackGroundColor: widget.counterBackGroundColor,
-                          shadowColor: widget.shadowColor,
-                          backGroundColor: widget.recordIconBackGroundColor,
-                          fullRecordPackageHeight: widget.fullRecordPackageHeight,
-                          recordIcon: widget.recordIcon,
-                          shouldShowText: soundRecordNotifier.isShow,
-                          soundRecorderState: state,
-                          slideToCancelTextStyle: widget.slideToCancelTextStyle,
-                          slideToCancelColorizeColors: widget.slideToCancelColorizeColors,
-                          slideToCancelText: widget.slideToCancelText,
-                        ),
-                      ),
-                      if (soundRecordNotifier.isShow)
-                        Center(
-                          child: ShowCounter(
+                  /// One row, not two stacked layers: the counter is handed to
+                  /// [ShowMicWithText] so it takes its own space ahead of the
+                  /// "slide to cancel" label instead of being painted over it.
+                  child: Center(
+                    child: ShowMicWithText(
+                      initRecordPackageWidth: widget.initRecordPackageWidth,
+                      counterBackGroundColor: widget.counterBackGroundColor,
+                      shadowColor: widget.shadowColor,
+                      backGroundColor: widget.recordIconBackGroundColor,
+                      fullRecordPackageHeight: widget.fullRecordPackageHeight,
+                      recordIcon: widget.recordIcon,
+                      shouldShowText: soundRecordNotifier.isShow,
+                      soundRecorderState: state,
+                      slideToCancelTextStyle: widget.slideToCancelTextStyle,
+                      slideToCancelColorizeColors: widget.slideToCancelColorizeColors,
+                      slideToCancelText: widget.slideToCancelText,
+                      counter: soundRecordNotifier.isShow
+                          ? ShowCounter(
                               counterBackGroundColor: widget.counterBackGroundColor,
                               counterMicColor: widget.counterMicColor,
                               counterTextStyle: widget.counterTextStyle,
                               soundRecorderState: state,
-                              fullRecordPackageHeight: widget.fullRecordPackageHeight),
-                        ),
-                    ],
+                              fullRecordPackageHeight: widget.fullRecordPackageHeight,
+                            )
+                          : null,
+                    ),
                   ),
                 ),
               ),

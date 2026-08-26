@@ -42,15 +42,8 @@ class SoundRecorderWhenLockedDesign extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: MediaQuery.of(context).size.width,
-      decoration: BoxDecoration(
-        color: cancelTextBackGroundColor ?? Colors.grey.shade100,
-        borderRadius: const BorderRadius.only(
-          bottomRight: Radius.circular(24),
-          topRight: Radius.circular(24),
-        ),
-      ),
       child: InkWell(
         onTap: () {
           /// Goes through cancelRecording rather than resetEdgePadding: the
@@ -101,37 +94,61 @@ class SoundRecorderWhenLockedDesign extends StatelessWidget {
               ),
             ),
 
-            /// cancel text
-            Expanded(
-              child: InkWell(
-                  onTap: () {
-                    soundRecordNotifier.isShow = false;
-                    String time = "${soundRecordNotifier.minute}:${soundRecordNotifier.second}";
-                    if (stopRecording != null) stopRecording!(time);
-                    soundRecordNotifier.resetEdgePadding();
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      cancelText ?? "",
-                      maxLines: 1,
-                      textAlign: TextAlign.center,
-                      overflow: TextOverflow.clip,
-                      style: cancelTextStyle ??
-                          const TextStyle(
-                            color: Colors.black,
-                          ),
-                    ),
-                  )),
-            ),
+            /// Wide enough to clear the send button's 1.3x scale — `Transform`
+            /// paints outside the box without claiming the space, so a tighter
+            /// gap lets the circle overlap the bar.
+            const SizedBox(width: 12),
 
-            /// counter text
-            ShowCounter(
-              soundRecorderState: soundRecordNotifier,
-              counterTextStyle: counterTextStyle,
-              counterBackGroundColor: counterBackGroundColor,
-              counterMicColor: counterMicColor,
-              fullRecordPackageHeight: fullRecordPackageHeight,
+            /// The bar itself. Same pill as the unlocked state — one fill, fully
+            /// rounded — instead of the old slab that was square down its left
+            /// edge and butted straight into the round send button.
+            Expanded(
+              child: Container(
+                height: fullRecordPackageHeight,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: cancelTextBackGroundColor ?? Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(fullRecordPackageHeight / 2),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    /// counter text
+                    ShowCounter(
+                      soundRecorderState: soundRecordNotifier,
+                      counterTextStyle: counterTextStyle,
+                      counterBackGroundColor: counterBackGroundColor,
+                      counterMicColor: counterMicColor,
+                      fullRecordPackageHeight: fullRecordPackageHeight,
+                    ),
+
+                    /// cancel text
+                    Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          soundRecordNotifier.isShow = false;
+                          String time = "${soundRecordNotifier.minute}:${soundRecordNotifier.second}";
+                          if (stopRecording != null) stopRecording!(time);
+                          soundRecordNotifier.resetEdgePadding();
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            cancelText ?? "",
+                            maxLines: 1,
+                            textAlign: TextAlign.center,
+                            overflow: TextOverflow.ellipsis,
+                            style: cancelTextStyle ??
+                                const TextStyle(
+                                  color: Colors.black,
+                                ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),
