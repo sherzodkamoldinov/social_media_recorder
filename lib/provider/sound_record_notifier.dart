@@ -35,6 +35,48 @@ class SoundRecordNotifier extends ChangeNotifier {
   /// enough to be deliberate, close enough to reach with one thumb.
   static const double _cancelDragFraction = 0.5;
 
+  /// Cancel threshold in logical pixels. When set, the cancel zone starts at
+  /// whichever comes first: this many pixels or [cancelThresholdFraction] of
+  /// the screen width. `null` — only the fraction (default behaviour).
+  double? cancelThresholdPx;
+
+  /// Fraction of the screen width the button must travel left to cancel.
+  double cancelThresholdFraction = _cancelDragFraction;
+
+  /// How far up (logical pixels) the finger must move to lock the recording.
+  double lockThresholdPx = 50;
+
+  /// Recordings shorter than this are discarded instead of sent. The default
+  /// keeps the historical `second > 1` rule (two seconds).
+  int minRecordSeconds = 2;
+
+  /// Fired once when the drag enters the cancel zone (e.g. for a haptic).
+  VoidCallback? onCancelZoneReached;
+
+  /// Fired once when the recording locks.
+  VoidCallback? onLocked;
+
+  /// Fired when a release is too short to be sent ([minRecordSeconds]).
+  VoidCallback? onTooShort;
+
+  /// Input level samples (0…1), one every [levelInterval] while recording —
+  /// for a live waveform. Cleared on reset.
+  final List<double> levels = <double>[];
+  static const Duration levelInterval = Duration(milliseconds: 100);
+  StreamSubscription<Amplitude>? _levelSubscription;
+
+  /// The cancel threshold used by the last drag update, in logical pixels.
+  double _cancelThreshold = 0;
+
+  /// Elapsed recording time in whole seconds.
+  int get elapsedSeconds => minute * 60 + second;
+
+  /// 0…1 — how far the finger has moved up towards the lock.
+  double get lockProgress => lockThresholdPx <= 0 ? 0 : (heightPosition / lockThresholdPx).clamp(0, 1).toDouble();
+
+  /// 0…1 — how far the button has moved left towards the cancel zone.
+  double get cancelProgress => _cancelThreshold <= 0 ? 0 : (edge / _cancelThreshold).clamp(0, 1).toDouble();
+
   /// Used when user enter the needed path
   String initialStorePathRecord = "";
 
@@ -117,12 +159,14 @@ class SoundRecordNotifier extends ChangeNotifier {
   /// stop while `buttonPressed` is false) and incremented the counter several
   /// times per second, so the max-record-time limit fired within seconds.
   void _mapCounterGenerater() async {
-    if(second == 0) {
-     await Future<void>.delayed(const Duration(seconds: 1));
-     /// Recording was already finished or cancelled while waiting — this chain
-     /// must die instead of scheduling a timer nobody owns.
-     if (!buttonPressed) return;
+    if (second == 0) {
+      await Future<void>.delayed(const Duration(seconds: 1));
+
+      /// Recording was already finished or cancelled while waiting — this chain
+      /// must die instead of scheduling a timer nobody owns.
+      if (!buttonPressed) return;
     }
+
     /// Never keep two counter chains alive: only the latest timer may run.
     _timerCounter?.cancel();
     _timerCounter = Timer(const Duration(seconds: 1), () {
@@ -133,10 +177,12 @@ class SoundRecordNotifier extends ChangeNotifier {
 
   finishRecording() {
     if (buttonPressed) {
-      if (second > 1 || minute > 0) {
+      if (elapsedSeconds >= minRecordSeconds) {
         String path = mPath;
         String time = "$minute:$second";
         sendRequestFunction(File.fromUri(Uri(path: path)), time);
+      } else {
+        onTooShort?.call();
       }
 
       /// Reported on every release, including a tap too short to produce a file.
@@ -196,6 +242,9 @@ class SoundRecordNotifier extends ChangeNotifier {
     _timer = null;
     _timerCounter?.cancel();
     _timerCounter = null;
+    _levelSubscription?.cancel();
+    _levelSubscription = null;
+    levels.clear();
     recordMp3.stop();
     notifyListeners();
   }
@@ -275,10 +324,11 @@ class SoundRecordNotifier extends ChangeNotifier {
       double hightValue = currentButtonHeihtPlace - x.dy;
 
       /// if reached to the max draggable value in the top
-      if (hightValue >= 50) {
+      if (hightValue >= lockThresholdPx) {
+        if (!isLocked) onLocked?.call();
         isLocked = true;
         lockScreenRecord = true;
-        hightValue = 50;
+        hightValue = lockThresholdPx;
         notifyListeners();
       }
       if (hightValue < 0) hightValue = 0;
@@ -298,7 +348,9 @@ class SoundRecordNotifier extends ChangeNotifier {
       /// arrive ~60 times a second. The button therefore raced off to the left
       /// on the faintest touch and the cancel threshold was crossed instantly.
       final double previous = last ?? x.dx;
-      final double cancelThreshold = MediaQuery.of(context).size.width * _cancelDragFraction;
+      double cancelThreshold = MediaQuery.of(context).size.width * cancelThresholdFraction;
+      if (cancelThresholdPx != null && cancelThresholdPx! < cancelThreshold) cancelThreshold = cancelThresholdPx!;
+      _cancelThreshold = cancelThreshold;
       edge += previous - x.dx;
 
       /// Clamped at both ends. Past [cancelThreshold] the decision is already
@@ -314,7 +366,9 @@ class SoundRecordNotifier extends ChangeNotifier {
       /// used to happen right in this handler, which killed the recording while
       /// the finger was still down and left no way back. The decision belongs
       /// to the release — see [releaseRecording].
-      isCancelZoneReached = edge >= cancelThreshold;
+      final bool reached = edge >= cancelThreshold;
+      if (reached && !isCancelZoneReached) onCancelZoneReached?.call();
+      isCancelZoneReached = reached;
 
       notifyListeners();
     }
@@ -368,8 +422,8 @@ class SoundRecordNotifier extends ChangeNotifier {
       _timer?.cancel();
       _timerCounter?.cancel();
 
-      _timer = Timer(const Duration(milliseconds: 900), () {
-        recordMp3.start(
+      _timer = Timer(const Duration(milliseconds: 900), () async {
+        await recordMp3.start(
           RecordConfig(
             encoder: _getRecordEncoder(),
 
@@ -380,6 +434,15 @@ class SoundRecordNotifier extends ChangeNotifier {
           ),
           path: recordFilePath,
         );
+
+        /// Released while the recorder was starting — nothing to sample.
+        if (!buttonPressed) return;
+        _levelSubscription?.cancel();
+        _levelSubscription = recordMp3.onAmplitudeChanged(levelInterval).listen((Amplitude amplitude) {
+          /// dBFS → 0…1: −50 dB and quieter is silence, 0 dB is the loudest.
+          levels.add(((amplitude.current + 50) / 50).clamp(0, 1).toDouble());
+          notifyListeners();
+        });
       });
 
       if (startRecord != null) {
@@ -404,8 +467,8 @@ class SoundRecordNotifier extends ChangeNotifier {
     }
 
     final storageStatus = await Permission.storage.status;
-    final storageGranted = storageStatus.isGranted ||
-        await Permission.storage.request().then((value) => value.isGranted);
+    final storageGranted =
+        storageStatus.isGranted || await Permission.storage.request().then((value) => value.isGranted);
 
     if (!storageGranted) {
       _isAcceptedPermission = false;
